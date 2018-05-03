@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" http-equiv="Content-Type" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>LibreNode v2.10</title>
+    <style>
+        .red{background-color:#f67e7e;}
+		.orange{background-color:peachpuff;}
+		.yellow{background-color:lightyellow;}
+		.green{background-color:#6ccf65;}
+		.aqua{background-color:#97e6de;;}
+		.blue{background-color:steelblue;}
+		.purple{background-color:rgb(187, 123, 163);}
+		.pink{background-color:pink;}
+		.black{background-color:#332f2f;;color:#fff4f4;}
+		.white{background-color:mintcream;}
+		html, body{background-color:#d5d7d7;height:100%}
+		h1{
+			background-color:#b0b0b0;
+			color: #6c6363;
+			text-align: center;
+			font-family: "Arial";
+		}
+		input{
+            width:100%;
+			height:24px;
+            font-size:15pt;
+		}
+		button{
+			width:128px;
+			height:64px;
+			border: 0px solid;
+			color: #22473b;
+			font-size: 22px;
+			background-color:#a1a1a1;
+			margin-bottom:5px;
+			-webkit-transition-duration: 0.1s;
+			transition-duration: 0.1s;
+		}
+		button:hover{opacity:0.6;}
+		button:active{transform:scale(1.2,1.2);}
+		textarea{
+			width:100%;
+			text-align:center;
+			font-size: 16px;
+		}
+
+        #status{
+            width:100%;
+            height:70%;
+        }
+
+		ul{font-size: 22px;color: #22473b;}
+		#passwordPrompt{
+			position:fixed;
+			top:0px;
+			width:100%;
+			background-color:#d5d7d7;
+			text-align:center;
+			z-index: 99;
+			display: none;
+		}
+        p{
+            color:white;
+            font-size:24px
+        }
+    </style>
+</head>
+
+<body>
+    <h1> Chat </h1>
+    <div class="white" id="status">Chat</div>
+    <input type="text" onkeypress="ontextpress(event)" id="send"></input>
+    <button onclick="window.location='/'" class="red">Terminal</button>
+    <button onclick="window.location='backend/'" class="green">Settings</button>
+</body>
+
+<script>
+    who_command = 'who';
+    page_url = window.location.href;
+    node_url = page_url.replace("https:","wss:");
+    node_url = node_url.replace("http:","ws:");
+    node_url = node_url + "ws";
+    /* SAVE IP IN LOCALSTORAGE */
+    if(localStorage.node_url === undefined){
+        console.log("No url saved");
+        localStorage.setItem("node_url",node_url);
+    } else {
+        console.log("Get url from localstorage")
+        node_url = localStorage.getItem("node_url");
+    }
+    document.getElementById('node_url').value = node_url;
+    function changeURL(){
+        node_url = document.getElementById('node_url').value;
+        console.log("Saved ip:" + node_url);
+        localStorage.setItem("node_url",node_url);
+        node.close();
+        node = new WebSocket(node_url);
+        node.onopen = nodeOk;
+        node.onmessage = nodeRead;
+        node.onerror = errorMessage;
+        node.onclose = errorMessage;
+    }
+    //Websocket
+    node = new WebSocket(node_url);
+    node.onopen = nodeOk;
+    node.onmessage = nodeRead;
+    node.onerror = errorMessage;
+    node.onclose = errorMessage;
+    function ontextpress(event){
+        console.log(event)
+        if (event.keyCode == 13 || event.which == 13){
+            node.send(document.getElementById("send").value);
+        }
+    }
+    function errorMessage(event){
+        console.log(event);
+        document.getElementById("status").innerHTML = "Not connected";
+        window.navigator.vibrate(200);
+        if(event.code == 1006){
+            document.getElementById("validate").innerHTML = '<a href="'+page_url+'" target="_blank">Validate SSL certificate</a>';
+        }
+    }
+    function nodeOk(){
+        document.getElementById("status").innerHTML = "Connected";
+    }
+    function nodeRead(event){
+        document.getElementById("status").innerHTML = event.data;
+    }
+
+    function data(){
+        return document.getElementById("send").value;
+    }
+</script>

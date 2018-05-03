@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings</title>
+    <style>
+        input{
+            font-size:15pt;
+            border: 3px solid #ccc;
+            padding: 5px 5px 5px 5px;
+            border-radius: 4px;
+        }
+
+        label{
+            font-size:15pt;
+            border: 3px solid #ccc;
+            padding: 5px 5px 5px 5px;
+        }
+
+        a {
+            font-size:15pt;
+            border: 3px solid #ccc;
+            padding: 5px 5px 5px 5px;
+        }
+
+        button{
+			height:32px;
+			border: 0px solid;
+			color: #22473b;
+			font-size: 22px;
+			background-color:#a1a1a1;
+			margin-bottom:5px;
+			-webkit-transition-duration: 0.1s;
+			transition-duration: 0.1s;
+        }
+        
+        button:hover{
+            background-color: #d10808;
+        }
+        
+        button:active{
+            background-color: #0c0c0c;
+        }
+        
+        h1{
+			background-color:#111111;
+			color: #b64d1d;
+			text-align: center;
+			font-family: "Arial";
+		}
+    </style>
+</head>
+<body>
+    <h1>Settings</h1>
+    <div id="Menu">
+        <input type="text" placeholder="Filter" id="filter" value="">
+        <button onclick=window.history.back()><</button>
+        <button onclick="addItem()">+</button>
+        <br>
+        <label for="file">Load</label><input onchange=load(this.files[0]) type="file" id="fileinput">
+        <br>
+        <label for="file">Save</label><input type="text" placeholder="save.json" name="saveFilename" value="save.json"> <button onclick="save()">Save</button>
+        <br>
+        <input type="password" placeholder="Password" id="secretPass" value="">
+        <button onclick="encrypt()">Encrypt</button>
+        <button onclick="decrypt()">Decrypt</button>
+    </div>
+    <br>
+    <div id="storage">
+    </div>
+    
+</body>
+<script src="aes.js"></script>
+<script src="app.js"></script>
+<script>
+    analyseGet();
+    getItems();
+
+</script>
+</html>
