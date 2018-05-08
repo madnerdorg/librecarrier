@@ -5,7 +5,7 @@ import ConfigParser
 import socket
 
 description = "Interconnect websockets clients"
-settings_file = "settings/node.ini"
+settings_file = "settings/librecarrier.ini"
 VERSION = "0.8"
 
 def get():

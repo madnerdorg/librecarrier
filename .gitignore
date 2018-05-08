@@ -3,3 +3,4 @@ ngrok.exe
 dist/
 build/
 .vscode/
+*.pyc

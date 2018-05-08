@@ -27,7 +27,7 @@ class LibreClient(WebSocketServerProtocol):
         server = {
                 "name": args["name"],
                 "channels": channels
-            } 
+            }
         self.port = 0
         self.plugged = False
         self.channel = ""
@@ -48,7 +48,7 @@ class LibreClient(WebSocketServerProtocol):
                 #print message
                 if client != self:
                     try:
-                        client.sendMessage(str(message.encode("utf-8")))
+                        client.sendMessage(str(message.encode(encoding="utf-8", errors="replace")))
                     except:
                         pass
 
@@ -66,41 +66,40 @@ class LibreClient(WebSocketServerProtocol):
                 self.sendMessage(json.dumps(channels))
                 return
             elif message == "clients":
-                self.sendMessage(str(len(clients)))
+                self.sendMessage(json.dumps({"clients":len(clients)}))
                 return
         if is_json:
             # Add Channel
             if "add" in message:
                 if message["add"] not in channels:
                     channels.append(message["add"])
-                    self.sendMessage(str("Created: " + message["add"]))
+                    self.sendMessage(json.dumps({"ok" : message["add"],"action":"add"}))
                     self.creator = True
                     self.plugged = True
                     self.channel = message["add"]
                 else:
-                    self.sendMessage(str("Already created: " + message["add"]))
+                    self.sendMessage(json.dumps({"error": message["add"],"action":"add"}))
                     return
             # Remove channel
             elif "remove" in message:
                 if message["remove"] in channels:
                     channels.remove(message["remove"])
-                    self.sendMessage(str("Removed:" + message["remove"]))
+                    self.sendMessage(json.dumps({"ok":message["remove"],"action":"remove"}))
                 else:
-                    self.sendMessage(str("Already removed: " + message["remove"]))
+                    self.sendMessage(json.dumps({"error":message["remove"],"action":"remove"}))
                 return
             # Connect to channel
             elif "connect" in message:
                 if message["connect"] in channels:
                     self.plugged = True
                     self.channel = message["connect"]
-                    print(str("Connected to :" + self.channel))
-                    self.sendMessage(str("Connected to :" + self.channel))
+                    self.sendMessage(json.dumps({"ok": self.channel,"action":"connect"}))
                 else:
-                    print("Channel doesn't exists")
+                    self.sendMessage(json.dumps({"error": "nochannel"}))
                 return
         else:
             #print "---IgNoRe----"
-            self.sendMessage(str({"error": "invalid command"}))
+            self.sendMessage(json.dumps({"error": "invalidcommand"}))
             #print "-------------"
 
     # On open we ask for a password
@@ -108,7 +107,7 @@ class LibreClient(WebSocketServerProtocol):
         # print("[INFO]: WebSocket connection open.")
         # TODO: Not Logged
         if self.protected:
-            self.sendMessage(server["name"] + " -- Password ?")
+            self.sendMessage(json.dumps({"password":server["name"]}))
         else:
             # TODO: Logged
             self.sendMessage(json.dumps(server))
@@ -136,9 +135,9 @@ class LibreClient(WebSocketServerProtocol):
                     if not self.protected:
                         self.sendMessage(json.dumps(server))
                     else:
-                        self.sendMessage(server["name"] + " -- Password ?")
+                        self.sendMessage(json.dumps({"password":server["name"]}))
                 else:
-                    self.sendMessage(server["name"] + " -- Password ?")
+                    self.sendMessage(json.dumps({"password":server["name"]}))
             # Logged
             else:
                 # On Channel
@@ -168,12 +167,12 @@ class LibreClient(WebSocketServerProtocol):
     # On close, we remove user from approved list
     def onClose(self, wasClean, code, reason):
         ip, port = self.transport.client
-        if code != 1006:
-            print(ip + ": disconnected")
+        #if code != 1006:
+        print(ip + ": disconnected")
         if self in clients:
             clients.remove(self)
         if self.creator:
             channels.remove(self.channel)
             for client in clients:
                 if self.channel == client.channel:
-                    client.sendMessage("Disconnected");
+                    client.sendMessage("Disconnected")

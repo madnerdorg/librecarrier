@@ -84,13 +84,11 @@ if args["ssl"]:
     if os.path.isfile(ssl_private) and os.path.isfile(ssl_public):
         contextFactory = ssl.DefaultOpenSSLContextFactory(ssl_private,
                                                           ssl_public)
-        # listenWS(factory, contextFactory, interface=interface)
         resource = WebSocketResource(factory)
     else:
         print("[ERROR]: I can't find " + ssl_private + " and/or " + ssl_public)
         failed_start = True
 else:
-    # listenWS(factory, interface=interface)
     resource = WebSocketResource(factory)
 
 if not failed_start:
