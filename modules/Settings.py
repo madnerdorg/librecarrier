@@ -37,7 +37,7 @@ def get_from_terminal():
                         help="Port (default 42000)")
     parser.add_argument("--ssl", default=False, action="store_true",
                         help="Encrypt communication using SSL certificates")
-    parser.add_argument("--gui", default=True, action="store_true",
+    parser.add_argument("--nogui", default=False, action="store_true",
                         help="Enable gui")
     parser.add_argument("--password", default=False,
                         help="Password for the websocket")

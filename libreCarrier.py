@@ -39,7 +39,7 @@ import json
 # Get parameters from terminal or settings file
 args = Settings.get()
 
-if args["gui"]:
+if args["nogui"] is False:
     from modules import Gui
 
 failed_start = False
