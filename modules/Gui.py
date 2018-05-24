@@ -28,7 +28,10 @@ def gui():
     # Create interface
     bg_grey = "#f3f3f3"
     root = Tk()
-    root.iconbitmap('libreCarrier.ico')
+    try:
+        root.iconbitmap('libreCarrier.ico')
+    except:
+        pass
     root.title("Libre Carrier")  #Title
     root.configure(background=bg_grey)  #Background color
     root.protocol("WM_DELETE_WINDOW", quit)
