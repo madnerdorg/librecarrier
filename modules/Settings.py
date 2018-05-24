@@ -8,19 +8,35 @@ description = "Interconnect websockets clients"
 settings_file = "settings/librecarrier.ini"
 VERSION = "0.8"
 
+def get_ip():
+    # https://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 32000))
+        IP = s.getsockname()[0]
+    except:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
 def get():
     args = get_from_terminal()
-    args["server_ip"] = socket.gethostbyname(socket.gethostname())
+    args["version"] = VERSION
+    args = get_from_file(args)
+    args["server_ip"] = get_ip()
     port = str(args["port"])
+
     if args["ssl"]:
         args["web_url"] = "https://" + args["server_ip"] + ":" + port
         args["ws_url"] = "wss://" + args["server_ip"] + ":" + port + "/ws"
     else:
         args["web_url"] = "http://" + args["server_ip"] + ":" + port
         args["ws_url"] = "ws://" + args["server_ip"] + ":" + port + "/ws"
-    args["version"] = VERSION
-    args = get_from_file(args)
+
     return args
+
 
 def get_from_terminal():
     """ Get arguments list
@@ -47,7 +63,7 @@ def get_from_terminal():
                         help="Seconds before a banned IP is unbanned")
     parser.add_argument("--ip_ban_retry", default=10,
                         help="Number of wrong password before IP is banned")
-    parser.add_argument("--max_clients", default=False,
+    parser.add_argument("--max_clients", default=0,
                         help="Number of clients")
     parser.add_argument("--certs", default="certs/",
                         help="location of the SSL certificates")
